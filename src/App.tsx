@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { AuthProvider, useAuth } from './firebase/AuthContext';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
+import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilPage from './pages/ProfilPage';
 import KegiatanPage from './pages/KegiatanPage';
@@ -21,10 +23,35 @@ import GalleryPage from './pages/GalleryPage';
 import BantuanPage from './pages/BantuanPage';
 import LegalPage from './pages/LegalPage';
 
-export default function App() {
+function AppContent() {
+  const { isAuthenticated, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState('dashboard');
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-lg bg-white flex items-center justify-center mx-auto mb-4 border border-emerald-100 animate-pulse">
+            <img
+              src="https://blogger.googleusercontent.com/img/a/AVvXsEikG35dotK_WNbgzE5vy4Q-9jWR1OlXf4p15XQDgN9lmx-0rY-trv76AA1L3WfZpLd-1djjLhzd_nqoznWh3WeTmegX144L5QoL3nGSHW5Wv8c8d_Z_tQCwxZqKBicaXYtORbEEOIDvai-OcVeZ8FX5jf7guBCUAMdp43oBztqG-gR0R4akiEiJnjSrsXAL"
+              alt="MWC NU Kedu"
+              className="w-12 h-12 object-contain"
+            />
+          </div>
+          <p className="text-emerald-600 text-sm font-medium animate-pulse">Memuat portal...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Not authenticated — show login page
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
+  // Authenticated — show main app
   const navigateTo = (menu: string) => {
     setActiveMenu(menu);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -32,46 +59,26 @@ export default function App() {
 
   const renderPage = () => {
     switch (activeMenu) {
-      case 'dashboard':
-        return <DashboardPage onNavigate={navigateTo} />;
-      case 'profil':
-        return <ProfilPage />;
-      case 'kegiatan':
-        return <KegiatanPage />;
-      case 'forum':
-        return <ForumPage />;
-      case 'lazisnu':
-        return <LazisnuPage />;
-      case 'artikel':
-        return <ArtikelPage />;
-      case 'pengajian':
-        return <PengajianPage />;
-      case 'notifikasi':
-        return <NotifikasiPage />;
-      case 'pengaturan':
-        return <PengaturanPage />;
-      case 'kelembagaan':
-        return <KelembagaanPage />;
-      case 'ranting':
-        return <JaringanRantingPage />;
-      case 'pendaftaran':
-        return <PendaftaranPage />;
-      case 'hak-akses':
-        return <HakAksesPage />;
-      case 'chat':
-        return <ChatPage />;
-      case 'masa-hidmat':
-        return <MasaHidmatPage />;
-      case 'arsip':
-        return <ArsipPage />;
-      case 'gallery':
-        return <GalleryPage />;
-      case 'bantuan':
-        return <BantuanPage />;
-      case 'legal':
-        return <LegalPage />;
-      default:
-        return <DashboardPage onNavigate={navigateTo} />;
+      case 'dashboard': return <DashboardPage onNavigate={navigateTo} />;
+      case 'profil': return <ProfilPage />;
+      case 'kegiatan': return <KegiatanPage />;
+      case 'forum': return <ForumPage />;
+      case 'lazisnu': return <LazisnuPage />;
+      case 'artikel': return <ArtikelPage />;
+      case 'pengajian': return <PengajianPage />;
+      case 'notifikasi': return <NotifikasiPage />;
+      case 'pengaturan': return <PengaturanPage />;
+      case 'kelembagaan': return <KelembagaanPage />;
+      case 'ranting': return <JaringanRantingPage />;
+      case 'pendaftaran': return <PendaftaranPage />;
+      case 'hak-akses': return <HakAksesPage />;
+      case 'chat': return <ChatPage />;
+      case 'masa-hidmat': return <MasaHidmatPage />;
+      case 'arsip': return <ArsipPage />;
+      case 'gallery': return <GalleryPage />;
+      case 'bantuan': return <BantuanPage />;
+      case 'legal': return <LegalPage />;
+      default: return <DashboardPage onNavigate={navigateTo} />;
     }
   };
 
@@ -122,5 +129,13 @@ export default function App() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
